@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "543656481102",
+    "project_id": "learnova-eaacf",
+    "storage_bucket": "learnova-eaacf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543656481102:android:2133a7d4b81b4baaa58e1f",
+        "android_client_info": {
+          "package_name": "com.example.learnova"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "543656481102-5dn1tg75fcebf271hujqm6t8m9q3l88q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvV7u3FavzpvCiMat5f8IkGOw-VncIyLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "543656481102-5dn1tg75fcebf271hujqm6t8m9q3l88q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

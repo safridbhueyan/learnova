@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingState {
-  final int currentStep; // 0: Academic, 1: Interests, 2: Skills, 3: Target Career
+  final int currentStep; // 0: Academic, 1: Interests, 2: Skills, 3: Target Career, 4: Results Upload
   final String university;
   final String department;
   final String semester;
@@ -9,6 +12,9 @@ class OnboardingState {
   final List<String> selectedInterests;
   final List<String> selectedSkills;
   final String targetCareer;
+  final bool hasUploadedResults;
+  final bool isAnalyzingResults;
+  final String? uploadedFileName;
   final bool isCompleted;
 
   const OnboardingState({
@@ -20,6 +26,9 @@ class OnboardingState {
     required this.selectedInterests,
     required this.selectedSkills,
     required this.targetCareer,
+    this.hasUploadedResults = false,
+    this.isAnalyzingResults = false,
+    this.uploadedFileName,
     required this.isCompleted,
   });
 
@@ -32,6 +41,9 @@ class OnboardingState {
     List<String>? selectedInterests,
     List<String>? selectedSkills,
     String? targetCareer,
+    bool? hasUploadedResults,
+    bool? isAnalyzingResults,
+    String? uploadedFileName,
     bool? isCompleted,
   }) {
     return OnboardingState(
@@ -43,6 +55,9 @@ class OnboardingState {
       selectedInterests: selectedInterests ?? this.selectedInterests,
       selectedSkills: selectedSkills ?? this.selectedSkills,
       targetCareer: targetCareer ?? this.targetCareer,
+      hasUploadedResults: hasUploadedResults ?? this.hasUploadedResults,
+      isAnalyzingResults: isAnalyzingResults ?? this.isAnalyzingResults,
+      uploadedFileName: uploadedFileName ?? this.uploadedFileName,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
@@ -53,22 +68,25 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
   OnboardingState build() {
     return const OnboardingState(
       currentStep: 0,
-      university: "UITS",
-      department: "CSE",
-      semester: "7th Semester",
-      cgpa: "3.85",
+      university: "",
+      department: "",
+      semester: "",
+      cgpa: "",
       selectedInterests: ["Mobile Development", "Artificial Intelligence"],
-      selectedSkills: ["Dart", "Flutter", "Firebase", "Git"],
+      selectedSkills: ["Dart", "Flutter", "Firebase"],
       targetCareer: "Flutter Developer",
+      hasUploadedResults: false,
+      isAnalyzingResults: false,
+      uploadedFileName: null,
       isCompleted: false,
     );
   }
 
   void nextStep() {
-    if (state.currentStep < 3) {
+    if (state.currentStep < 4) {
       state = state.copyWith(currentStep: state.currentStep + 1);
     } else {
-      state = state.copyWith(isCompleted: true);
+      completeOnboarding();
     }
   }
 
@@ -111,8 +129,54 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
     state = state.copyWith(targetCareer: careerTitle);
   }
 
+  Future<void> simulateResultUploadAndAnalysis(String sourceName) async {
+    state = state.copyWith(isAnalyzingResults: true, uploadedFileName: sourceName);
+    
+    // Simulate AI loading & Tech stack extraction
+    await Future.delayed(const Duration(milliseconds: 1600));
+    
+    state = state.copyWith(
+      isAnalyzingResults: false,
+      hasUploadedResults: true,
+      isCompleted: true,
+    );
+    await saveOnboardingToFirestore();
+  }
+
+  void skipResultUpload() {
+    state = state.copyWith(
+      hasUploadedResults: false,
+      isCompleted: true,
+    );
+    saveOnboardingToFirestore();
+  }
+
   void completeOnboarding() {
     state = state.copyWith(isCompleted: true);
+    saveOnboardingToFirestore();
+  }
+
+  Future<void> saveOnboardingToFirestore() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final data = {
+          'university': state.university,
+          'department': state.department,
+          'semester': state.semester,
+          'cgpa': state.cgpa,
+          'selectedInterests': state.selectedInterests,
+          'selectedSkills': state.selectedSkills,
+          'targetCareer': state.targetCareer,
+          'hasUploadedResults': state.hasUploadedResults,
+          'updatedAt': DateTime.now().toIso8601String(),
+        };
+        await FirebaseFirestore.instance.collection('user').doc(user.uid).set(data, SetOptions(merge: true));
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set(data, SetOptions(merge: true));
+      }
+    } catch (e) {
+      debugPrint("Save onboarding to firestore error: $e");
+    }
   }
 }
 

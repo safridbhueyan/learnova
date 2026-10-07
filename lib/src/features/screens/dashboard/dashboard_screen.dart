@@ -5,6 +5,8 @@ import '../../../core/animations/app_animations.dart';
 import '../../../core/theme/theme_extension/color_scheme.dart';
 import '../auth/auth_screen.dart';
 import '../auth/provider/auth_provider.dart';
+import '../marksheet/marksheet_screen.dart';
+import '../result_analyzer/provider/result_analyzer_provider.dart';
 import '../student_profile/provider/student_profile_provider.dart';
 import '../student_profile/student_profile_screen.dart';
 import 'provider/dashboard_provider.dart';
@@ -20,6 +22,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(dashboardProvider);
     final student = ref.watch(studentProfileProvider);
+    final analyzerState = ref.watch(resultAnalyzerProvider);
 
     return Scaffold(
       backgroundColor: AppColor.background,
@@ -68,6 +71,15 @@ class DashboardScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.receipt_long_rounded, color: AppColor.primary, size: 22.r),
+            tooltip: "Semester Marksheets",
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const MarksheetScreen()),
+              );
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.logout_rounded, color: AppColor.missing, size: 20.r),
             tooltip: "Sign Out",
             onPressed: () {
@@ -78,7 +90,7 @@ class DashboardScreen extends ConsumerWidget {
               );
             },
           ),
-          8.horizontalSpace,
+          6.horizontalSpace,
         ],
       ),
       body: SingleChildScrollView(
@@ -95,8 +107,75 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             14.verticalSpace,
+            // Academic Marksheets & Semester Grades Banner
             ScaleFadeEntrance(
-              delay: const Duration(milliseconds: 100),
+              delay: const Duration(milliseconds: 60),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const MarksheetScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(16.r),
+                child: Container(
+                  padding: EdgeInsets.all(14.r),
+                  decoration: BoxDecoration(
+                    color: AppColor.cardBg,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
+                      color: analyzerState.hasUploadedResults ? AppColor.mastered.withValues(alpha: 0.4) : AppColor.accent.withValues(alpha: 0.4),
+                      width: 1.w,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColor.shadow,
+                        blurRadius: 8,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10.r),
+                        decoration: BoxDecoration(
+                          color: analyzerState.hasUploadedResults ? AppColor.masteredLight : AppColor.accentLight,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          analyzerState.hasUploadedResults ? Icons.verified_outlined : Icons.upload_file_rounded,
+                          color: analyzerState.hasUploadedResults ? AppColor.mastered : AppColor.accent,
+                          size: 20.sp,
+                        ),
+                      ),
+                      12.horizontalSpace,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Semester Marksheets & SGPA",
+                              style: TextStyle(fontSize: 13.5.sp, fontWeight: FontWeight.bold, color: AppColor.textPrimary),
+                            ),
+                            2.verticalSpace,
+                            Text(
+                              analyzerState.hasUploadedResults
+                                  ? "${analyzerState.subjects.length} Course Marks • Tap to view 1st-8th Semester Marksheets"
+                                  : "Upload Marksheets via Camera/Gallery to view Semester SGPA",
+                              style: TextStyle(fontSize: 11.sp, color: AppColor.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios_rounded, size: 14.sp, color: AppColor.primary),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            14.verticalSpace,
+            ScaleFadeEntrance(
+              delay: const Duration(milliseconds: 120),
               child: ReadinessGaugeWidget(
                 readinessScore: summary.jobReadinessScore,
                 statusLabel: "Job Ready Candidate",
@@ -104,7 +183,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             14.verticalSpace,
             ScaleFadeEntrance(
-              delay: const Duration(milliseconds: 200),
+              delay: const Duration(milliseconds: 180),
               child: AIInsightBanner(
                 text:
                     "Dart & Flutter UI at 88%+. Completing REST API integration and Clean Architecture qualifies you for top roles.",
@@ -112,7 +191,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             18.verticalSpace,
             ScaleFadeEntrance(
-              delay: const Duration(milliseconds: 280),
+              delay: const Duration(milliseconds: 240),
               child: Text(
                 "Quick Access Hub",
                 style: TextStyle(
@@ -124,7 +203,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             10.verticalSpace,
             ScaleFadeEntrance(
-              delay: const Duration(milliseconds: 350),
+              delay: const Duration(milliseconds: 300),
               child: QuickStatsGrid(
                 skillProgress: summary.skillProgressPercentage,
                 completedRoadmap: summary.completedRoadmapItems,

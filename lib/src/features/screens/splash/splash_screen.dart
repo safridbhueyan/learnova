@@ -35,116 +35,142 @@ class SplashScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColor.background,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(),
-              // Animated Learnova Logo Hero
-              ScaleFadeEntrance(
-                delay: Duration.zero,
-                duration: const Duration(milliseconds: 700),
-                startScale: 0.8,
-                child: Container(
-                  padding: EdgeInsets.all(20.r),
-                  constraints: BoxConstraints(maxHeight: 140.h, maxWidth: 320.w),
-                  child: Image.asset(
-                    'assets/images/learnova_logo.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(14.r),
-                            decoration: const BoxDecoration(
-                              color: AppColor.primarySubtle,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(Icons.rocket_launch_rounded, color: AppColor.accent, size: 40.r),
-                          ),
-                          12.horizontalSpace,
-                          RichText(
-                            text: TextSpan(
+      body: Stack(
+        children: [
+          // Ambient background decoration
+          Positioned(
+            top: -60.h,
+            right: -60.w,
+            child: Container(
+              width: 220.r,
+              height: 220.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColor.primarySubtle.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -40.h,
+            left: -40.w,
+            child: Container(
+              width: 180.r,
+              height: 180.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColor.accentLight.withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Animated Learnova Logo Hero
+                    ScaleFadeEntrance(
+                      delay: Duration.zero,
+                      duration: const Duration(milliseconds: 700),
+                      startScale: 0.8,
+                      child: SizedBox(
+                        height: 110.h,
+                        child: Image.asset(
+                          'assets/images/learnova_logo.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                TextSpan(
-                                  text: "Learn",
-                                  style: TextStyle(
-                                    fontSize: 34.sp,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColor.primary,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: "ova",
-                                  style: TextStyle(
-                                    fontSize: 34.sp,
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColor.accent,
+                                Icon(Icons.rocket_launch_rounded, color: AppColor.accent, size: 42.r),
+                                12.horizontalSpace,
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: "Learn",
+                                        style: TextStyle(
+                                          fontSize: 36.sp,
+                                          fontWeight: FontWeight.w900,
+                                          color: AppColor.primary,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "ova",
+                                        style: TextStyle(
+                                          fontSize: 36.sp,
+                                          fontWeight: FontWeight.w900,
+                                          color: AppColor.accent,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    24.verticalSpace,
+                    ScaleFadeEntrance(
+                      delay: const Duration(milliseconds: 200),
+                      child: Text(
+                        "AI-Powered Career Guidance &\nSkill Development Engine",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.textSecondary,
+                          height: 1.45,
+                        ),
+                      ),
+                    ),
+                    36.verticalSpace,
+                    // Status Loading Indicator
+                    ScaleFadeEntrance(
+                      delay: const Duration(milliseconds: 400),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 32.r,
+                            height: 32.r,
+                            child: const CircularProgressIndicator(
+                              color: AppColor.primary,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                          16.verticalSpace,
+                          Text(
+                            splashState.statusMessage,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              color: AppColor.textMuted,
                             ),
                           ),
                         ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-              24.verticalSpace,
-              ScaleFadeEntrance(
-                delay: const Duration(milliseconds: 200),
-                child: Text(
-                  "AI-Powered Career Guidance &\nSkill Development Engine",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColor.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              // Status Loading Indicator
-              ScaleFadeEntrance(
-                delay: const Duration(milliseconds: 400),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: 28.r,
-                      height: 28.r,
-                      child: const CircularProgressIndicator(
-                        color: AppColor.primary,
-                        strokeWidth: 3,
                       ),
                     ),
-                    14.verticalSpace,
+                    24.verticalSpace,
                     Text(
-                      splashState.statusMessage,
+                      "v1.0.0 • Learnova Engine",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 11.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColor.textMuted,
+                        color: AppColor.textMuted.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
                 ),
               ),
-              30.verticalSpace,
-              Text(
-                "v1.0.0 • Learnova Engine",
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  color: AppColor.textMuted.withValues(alpha: 0.6),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

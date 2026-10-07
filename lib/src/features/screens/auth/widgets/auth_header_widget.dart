@@ -14,27 +14,19 @@ class AuthHeaderWidget extends StatelessWidget {
       delay: Duration.zero,
       child: Column(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            constraints: BoxConstraints(maxHeight: 90.h, maxWidth: 300.w),
+          SizedBox(
+            height: 75.h,
             child: Image.asset(
               'assets/images/learnova_logo.png',
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(10.r),
-                      decoration: const BoxDecoration(
-                        color: AppColor.primarySubtle,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.rocket_launch_rounded,
-                        color: AppColor.accent,
-                        size: 28.r,
-                      ),
+                    Icon(
+                      Icons.rocket_launch_rounded,
+                      color: AppColor.accent,
+                      size: 32.sp,
                     ),
                     10.horizontalSpace,
                     RichText(
@@ -43,7 +35,7 @@ class AuthHeaderWidget extends StatelessWidget {
                           TextSpan(
                             text: "Learn",
                             style: TextStyle(
-                              fontSize: 26.sp,
+                              fontSize: 28.sp,
                               fontWeight: FontWeight.w900,
                               color: AppColor.primary,
                             ),
@@ -51,7 +43,7 @@ class AuthHeaderWidget extends StatelessWidget {
                           TextSpan(
                             text: "ova",
                             style: TextStyle(
-                              fontSize: 26.sp,
+                              fontSize: 28.sp,
                               fontWeight: FontWeight.w900,
                               color: AppColor.accent,
                             ),
@@ -66,13 +58,24 @@ class AuthHeaderWidget extends StatelessWidget {
           ),
           12.verticalSpace,
           Text(
+            isLogin ? "Welcome Back to Learnova" : "Create Your Student Account",
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: AppColor.textPrimary,
+              letterSpacing: -0.2,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          4.verticalSpace,
+          Text(
             isLogin
-                ? "Welcome back! Sign in to continue your career grooming."
-                : "Begin your AI-powered career readiness journey today.",
+                ? "Sign in to access your personalized AI career roadmap & grade insights."
+                : "Empower your academic journey & unlock AI career recommendations.",
             style: TextStyle(
               fontSize: 12.sp,
               color: AppColor.textSecondary,
-              height: 1.3,
+              height: 1.35,
             ),
             textAlign: TextAlign.center,
           ),

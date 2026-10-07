@@ -3,30 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/theme_extension/color_scheme.dart';
 import '../provider/auth_provider.dart';
-import 'google_sign_in_button_widget.dart';
 
-class LoginFormWidget extends ConsumerStatefulWidget {
-  const LoginFormWidget({super.key});
+class ForgotPasswordWidget extends ConsumerStatefulWidget {
+  const ForgotPasswordWidget({super.key});
 
   @override
-  ConsumerState<LoginFormWidget> createState() => _LoginFormWidgetState();
+  ConsumerState<ForgotPasswordWidget> createState() => _ForgotPasswordWidgetState();
 }
 
-class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
+class _ForgotPasswordWidgetState extends ConsumerState<ForgotPasswordWidget> {
   late final TextEditingController emailController;
-  late final TextEditingController passwordController;
 
   @override
   void initState() {
     super.initState();
     emailController = TextEditingController();
-    passwordController = TextEditingController();
   }
 
   @override
   void dispose() {
     emailController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -37,6 +33,39 @@ class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            InkWell(
+              borderRadius: BorderRadius.circular(8.r),
+              onTap: () {
+                ref.read(authProvider.notifier).showLoginMode();
+              },
+              child: Padding(
+                padding: EdgeInsets.all(4.r),
+                child: Icon(Icons.arrow_back_rounded, size: 20.sp, color: AppColor.textPrimary),
+              ),
+            ),
+            6.horizontalSpace,
+            Text(
+              "Reset Account Password",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColor.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        8.verticalSpace,
+        Text(
+          "Enter your registered student email below. We will send you a secure link to reset your Learnova password.",
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: AppColor.textSecondary,
+            height: 1.4,
+          ),
+        ),
+        16.verticalSpace,
         if (authState.errorMessage != null) ...[
           Container(
             padding: EdgeInsets.all(12.r),
@@ -84,7 +113,7 @@ class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
           14.verticalSpace,
         ],
         Text(
-          "Student Email Address",
+          "Student University Email",
           style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: AppColor.textPrimary),
         ),
         6.verticalSpace,
@@ -93,7 +122,7 @@ class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
           keyboardType: TextInputType.emailAddress,
           style: TextStyle(fontSize: 13.sp, color: AppColor.textPrimary),
           decoration: InputDecoration(
-            hintText: "e.g. student@uits.edu.bd",
+            hintText: "e.g. student@university.edu",
             hintStyle: TextStyle(fontSize: 13.sp, color: AppColor.textMuted),
             prefixIcon: const Icon(Icons.email_outlined, color: AppColor.primary, size: 20),
             filled: true,
@@ -113,66 +142,7 @@ class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
             ),
           ),
         ),
-        16.verticalSpace,
-        Text(
-          "Password",
-          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: AppColor.textPrimary),
-        ),
-        6.verticalSpace,
-        TextField(
-          controller: passwordController,
-          obscureText: !authState.isLoginPasswordVisible,
-          style: TextStyle(fontSize: 13.sp, color: AppColor.textPrimary),
-          decoration: InputDecoration(
-            hintText: "Enter your password",
-            hintStyle: TextStyle(fontSize: 13.sp, color: AppColor.textMuted),
-            prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColor.primary, size: 20),
-            suffixIcon: IconButton(
-              icon: Icon(
-                authState.isLoginPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                color: AppColor.textSecondary,
-                size: 20.sp,
-              ),
-              onPressed: () {
-                ref.read(authProvider.notifier).toggleLoginPasswordVisibility();
-              },
-            ),
-            filled: true,
-            fillColor: AppColor.surfaceLight,
-            contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColor.cardBorder, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColor.primary, width: 1.5),
-            ),
-          ),
-        ),
-        8.verticalSpace,
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            onPressed: () {
-              ref.read(authProvider.notifier).showForgotPasswordMode();
-            },
-            child: Text(
-              "Forgot password?",
-              style: TextStyle(fontSize: 12.sp, color: AppColor.accent, fontWeight: FontWeight.w700),
-            ),
-          ),
-        ),
-        18.verticalSpace,
+        20.verticalSpace,
         SizedBox(
           width: double.infinity,
           height: 48.h,
@@ -187,9 +157,8 @@ class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
             onPressed: authState.isLoading
                 ? null
                 : () {
-                    ref.read(authProvider.notifier).login(
+                    ref.read(authProvider.notifier).sendForgotPasswordEmail(
                           emailController.text.trim(),
-                          passwordController.text,
                         );
                   },
             child: authState.isLoading
@@ -202,31 +171,28 @@ class _LoginFormWidgetState extends ConsumerState<LoginFormWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Sign In to Learnova",
+                        "Send Reset Link",
                         style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, letterSpacing: 0.2),
                       ),
                       8.horizontalSpace,
-                      Icon(Icons.arrow_forward_rounded, size: 18.sp),
+                      Icon(Icons.mark_email_read_rounded, size: 18.sp),
                     ],
                   ),
           ),
         ),
-        18.verticalSpace,
-        Row(
-          children: [
-            const Expanded(child: Divider(color: AppColor.divider)),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
-              child: Text(
-                "OR SIGN IN WITH",
-                style: TextStyle(fontSize: 10.sp, color: AppColor.textMuted, fontWeight: FontWeight.w700, letterSpacing: 0.5),
-              ),
-            ),
-            const Expanded(child: Divider(color: AppColor.divider)),
-          ],
-        ),
         16.verticalSpace,
-        const GoogleSignInButtonWidget(),
+        Center(
+          child: TextButton.icon(
+            onPressed: () {
+              ref.read(authProvider.notifier).showLoginMode();
+            },
+            icon: Icon(Icons.arrow_back_rounded, size: 16.sp, color: AppColor.primary),
+            label: Text(
+              "Back to Sign In",
+              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: AppColor.primary),
+            ),
+          ),
+        ),
       ],
     );
   }
